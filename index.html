@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BUBT Cover Page Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/printThis/1.15.0/printThis.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        /* Custom Style for Input Fields */
+        *{
+            color: black !important;
+        }
+        input, select {
+            border: 2px solid #4A90E2;
+            border-radius: 12px;
+            padding: 14px 12px;
+            transition: all 0.3s ease-in-out;
+            font-family: 'Arial', sans-serif;
+            font-size: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4A90E2;
+            box-shadow: 0 0 10px rgba(74, 144, 226, 0.5);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 25px;
+            background: linear-gradient(135deg, #f7c5d2, #d6eaf8);
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-custom {
+            background-color: #4A90E2;
+            padding: 12px 28px;
+            border-radius: 30px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s;
+            font-family: 'Arial', sans-serif;
+            cursor: pointer;
+        }
+
+        .btn-custom:hover {
+            background-color: #357ABD;
+            transform: scale(1.05);
+        }
+
+        /* Typography Styles */
+        h1, h3 {
+            font-family: 'Georgia', serif;
+            font-size: 1.4rem;
+            color: #333;
+        }
+
+        p, label {
+            font-family: 'Arial', sans-serif;
+            color: #555;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .underline {
+            text-decoration: underline;
+        }
+
+        .font-bold {
+            font-weight: bold;
+        }
+
+        .font-semibold {
+            font-weight: 600;
+        }
+
+        body {
+            background-color: #f4f4f4;
+            font-family: 'Arial', sans-serif;
+            color: #333;
+        }
+
+        /* Ensuring the cover page has a white background */
+        #coverPage {
+            background-color: #fff !important;
+        }
+    </style>
+</head>
+<body>
+    <header id="form" class="max-w-5xl mx-auto p-10 grid gap-5 border-2 border-blue-500 rounded-3xl mt-6 shadow-xl bg-gradient-to-r from-blue-200 via-purple-100 to-pink-100">
+        <h1 class="text-4xl font-semibold text-center text-gray-900">BUBT Cover Page Generator</h1>
+
+        <label for="type" class="text-lg font-medium text-gray-700">Type:</label>
+        <select name="" id="type" class="w-full mb-4" onchange="filterCourses()">
+            <option value="ASSIGNMENT">ASSIGNMENT</option>
+            <option value="Lab Report">Lab Report</option>
+        </select>
+
+        <label for="assignmentNo" class="text-lg font-medium text-gray-700">Assignment No:</label>
+        <input type="text" id="assignmentNo" placeholder="Enter Assignment No" class="w-full mb-4">
+
+        <label for="course" class="text-lg font-medium text-gray-700">Course:</label>
+        <select name="" id="course" class="w-full mb-4">
+            <option value="CSE 313, Mathematical Analysis for Computer Science, Meher Afroj, Assistant Professor">CSE 313, Mathematical Analysis for Computer Science, Meher Afroj, Assistant Professor</option>
+            <option value="CSE 407, Project Management and Professional Ethics, Nasrin Akter, Assistant Professor">CSE 407, Project Management and Professional Ethics, Nasrin Akter, Assistant Professor</option>
+            <option value="CSE 417, Distributed Database Management Systems, Ali Azgar, Assistant Professor">CSE 417, Distributed Database Management Systems, Ali Azgar, Assistant Professor</option>
+            <option value="CSE 453, Software Testing & Quality Assurance, Nadia Afrin Ritu, Assistant Professor">CSE 453, Software Testing & Quality Assurance, Nadia Afrin Ritu, Assistant Professor</option>
+            <option value="CSE 475, Data Mining, Nasirul Mumenin, Assistant Professor">CSE 475, Data Mining, Nasirul Mumenin, Assistant Professor</option>
+        </select>
+
+        <label for="name" class="text-lg font-medium text-gray-700">Submitted By (Your Name):</label>
+        <input type="text" id="name" placeholder="Enter Your Name" class="w-full mb-4" value="Jahid">
+
+        <label for="idNo" class="text-lg font-medium text-gray-700">ID No:</label>
+        <input type="text" id="idNo" placeholder="Enter Your ID No" class="w-full mb-4" value="22231203057">
+
+        <button type="submit" id="btn" class="btn-custom">Generate Cover Page</button>
+    </header>
+
+    <main>
+        <div class="hidden" id="coverPage">
+            <div class="bg-gray-100 m-12 p-12 border-2 border-gray-300 rounded-3xl flex flex-col justify-center items-center gap-8 shadow-xl">
+                <h3 class="text-2xl font-extrabold text-gray-800">Bangladesh University of Business and Technology</h3>
+                <img src="./bubt-logo.png" alt="BUBT Logo" class="w-30">
+                <p class="py-2 px-10 border-2 border-black rounded-2xl text-3xl font-black" id="tType"></p>
+
+                <div class="text-left text-gray-800 text-xl -ml-50 leading-6">
+                    <p class="font-bold">Assignment No: <span id="assNo" class="font-normal"></span></p>
+                    <p class="font-bold">Course Code: <span id="cCode" class="font-normal"></span></p>
+                    <p class="font-bold">Course Title: <span id="cTitle" class="font-normal"></span></p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6 mt-6">
+                    <div class="p-5 border-2 border-gray-400 rounded-2xl text-left font-semibold text-lg leading-7">
+                        <p class="text-center underline">Submitted By:</p>
+                        <p>Name: <span id="cName" class="font-normal"></span></p>
+                        <p>ID No: <span id="cID" class="font-normal"></span></p>
+                        <p>Intake: <span class="font-normal">43</span></p>
+                        <p>Section: <span class="font-normal">2</span></p>
+                        <p>Program: <span class="font-normal">BSc in CSE</span></p>
+                    </div>
+                    <div class="p-5 border-2 border-gray-400 rounded-2xl text-left font-semibold text-lg leading-7">
+                        <p class="text-center underline">Submitted To:</p>
+                        <p>Name: <span id="tName" class="font-normal"></span></p>
+                        <p class="text-0.5xl"><span id="tdeg" class="font-normal italic"></span> <span class="font-normal italic">Dept. of Computer Science & Engineering</span></p>
+
+                        <p class="text-0.5xl">Bangladesh University of Business & Technology</p>
+                    </div>
+                </div>
+
+                <p class="font-bold text-xl mt-6">Date of Submission: </p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Function to filter courses based on type selection
+        function filterCourses() {
+            const type = document.getElementById("type").value;
+            const courseSelect = document.getElementById("course");
+            courseSelect.innerHTML = ''; // Clear the current options
+
+            let courses = [];
+            if (type === "ASSIGNMENT") {
+                courses = [
+                    "CSE 313, Mathematical Analysis for Computer Science, Meher Afroj, Assistant Professor",
+                    "CSE 407, Project Management and Professional Ethics, Nasrin Akter, Assistant Professor",
+                    "CSE 417, Distributed Database Management Systems, Ali Azgar, Assistant Professor",
+                    "CSE 453, Software Testing & Quality Assurance, Nadia Afrin Ritu, Assistant Professor",
+                    "CSE 475, Data Mining, Nasirul Mumenin, Assistant Professor"
+                ];
+            } else if (type === "Lab Report") {
+                courses = [
+                    "CSE 418, Distributed Database Management Systems Lab, Ali Azgar, Assistant Professor",
+                    "CSE 476, Data Mining Lab, Nasirul Mumenin, Assistant Professor"
+                ];
+            }
+
+            // Populate the course dropdown with the filtered courses
+            courses.forEach(course => {
+                const option = document.createElement("option");
+                option.value = course;
+                option.textContent = course;
+                courseSelect.appendChild(option);
+            });
+        }
+
+        document.getElementById("btn").onclick = function () {
+            let asNo = document.getElementById("assignmentNo").value;
+            let course = document.getElementById("course").selectedOptions[0].text;
+            let name = document.getElementById("name").value;
+            let idNo = document.getElementById("idNo").value;
+            let type = document.getElementById("type").value;
+
+            document.getElementById("assNo").innerText = asNo;
+            document.getElementById("cCode").innerText = course.split(",")[0];
+            document.getElementById("cTitle").innerText = course.split(",")[1];
+            document.getElementById("tName").innerText = course.split(",")[2];
+            document.getElementById("tdeg").innerText = course.split(",")[3];
+            document.getElementById("cName").innerText = name;
+            document.getElementById("cID").innerText = idNo;
+            document.getElementById("tType").innerText = type;
+
+            document.getElementById("coverPage").style.display = "block";
+            document.getElementById("form").style.display = "none";
+
+            // Use printThis to print the content and convert to PDF
+            $('#coverPage').printThis({
+                debug: false,  // Set to true if you want to debug
+                importCSS: true,  // Import CSS from the page
+                importStyle: true,  // Import the style from the page
+                printContainer: true,  // Print the entire container
+                pageTitle: "BUBT Cover Page",  // Title for the print page
+                removeInline: false,  // Do not remove inline styles
+                printDelay: 333,  // Set delay in milliseconds
+                success: function() {
+                    console.log('Printing completed');
+                }
+            });
+        }
+
+        // Initial call to populate courses based on default selection
+        filterCourses();
+    </script>
+</body>
+</html>
